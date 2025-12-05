@@ -1,0 +1,44 @@
+
+KaizoCheckpoint = {}
+
+function KaizoCheckpoint:new(x,y,z)
+    local kaizoCube = {}
+    setmetatable(kaizoCube, self)
+    self.__index = self
+
+    kaizoCube.body = MainLevel.world:newBoxCollider(x,y,z,1,1,1)
+    kaizoCube.body:setTag("pickup")
+    kaizoCube.is_checkpoint = true
+    kaizoCube.checkpoint_number = 0
+
+    return kaizoCube
+end
+
+function KaizoCheckpoint:preupdate(dt)
+    self.body:setAngularVelocity(0,0,0)
+    self.body:setOrientation(0, 0, 0, 0)
+end
+
+function KaizoCheckpoint:postupdate(dt)
+    local x,y,z = self.body:getPosition()
+
+    if y < MainLevel.death_line_y then
+        self.marked_for_deletion = true
+        return
+    end
+end
+
+function KaizoCheckpoint:draw(pass)
+    if not self.img then
+        self.img = KaizoImage:new("checkpoint.png")
+    end
+
+    local x,y,z = self.body:getPosition()
+    self.img:draw_billboard(pass,x,y,z,1.45)
+end
+
+function KaizoCheckpoint:handle_pickup(collector)
+    KaizoSaveHandler.savedata.saved_checkpoint = self.checkpoint_number
+    self.marked_for_deletion = true
+    collector.health = 100
+end

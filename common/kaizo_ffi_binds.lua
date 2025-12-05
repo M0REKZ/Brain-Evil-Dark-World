@@ -1,0 +1,50 @@
+
+local ffi = require "ffi"
+
+ffi.cdef [[
+        enum {
+            GLFW_CURSOR = 0x00033001,
+            GLFW_CURSOR_NORMAL = 0x00034001,
+            GLFW_CURSOR_HIDDEN = 0x00034002,
+            GLFW_CURSOR_DISABLED = 0x00034003,
+            GLFW_ARROW_CURSOR = 0x00036001,
+            GLFW_IBEAM_CURSOR = 0x00036002,
+            GLFW_CROSSHAIR_CURSOR = 0x00036003,
+            GLFW_HAND_CURSOR = 0x00036004,
+            GLFW_HRESIZE_CURSOR = 0x00036005,
+            GLFW_VRESIZE_CURSOR = 0x00036006
+        };
+        typedef struct GLFWwindow GLFWwindow;
+        typedef struct GLFWmonitor GLFWmonitor;
+        typedef struct GLFWvidmode GLFWvidmode;
+        GLFWwindow * os_get_glfw_window(void);
+        void glfwSetInputMode(GLFWwindow* window, int mode, int value);
+        GLFWmonitor * glfwGetPrimaryMonitor(void);
+        GLFWmonitor ** glfwGetMonitors(int *count);
+        void glfwGetMonitorWorkarea(GLFWmonitor *monitor, int *xpos, int *ypos, int *width, int *height);
+        const GLFWvidmode * glfwGetVideoMode(GLFWmonitor *monitor);
+        void glfwGetWindowPos(GLFWwindow *window, int *xpos, int *ypos);
+        void glfwGetWindowSize(GLFWwindow *window, int *width, int *height);
+        void glfwSetWindowSize(GLFWwindow *window, int width, int height);
+        void glfwSetWindowMonitor(GLFWwindow * window, GLFWmonitor * monitor, int xpos, int ypos, int width, int height, int refreshRate);
+    ]]
+
+
+function SetMouseGrabbed(enable)
+    -- grab mouse, must replace with setMouseGrabbed in 0.19.0 later
+    ffi.C.glfwSetInputMode(ffi.C.os_get_glfw_window(), ffi.C.GLFW_CURSOR, enable and ffi.C.GLFW_CURSOR_DISABLED or ffi.C.GLFW_CURSOR_NORMAL)
+end
+
+function SetFullscreen()
+    KaizoSaveHandler.config.fullscreen = true
+    local monitor_rectangle = ffi.new("int[4]")
+    local monitor = ffi.C.glfwGetPrimaryMonitor()
+    ffi.C.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
+    ffi.C.glfwSetWindowMonitor(ffi.C.os_get_glfw_window(), monitor, monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3], -1)
+end
+
+function SetWindowed()
+    KaizoSaveHandler.config.fullscreen = false
+    local window = ffi.C.os_get_glfw_window()
+    ffi.C.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
+end
