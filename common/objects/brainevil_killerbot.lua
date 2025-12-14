@@ -8,7 +8,7 @@ function BrainEvilKillerBot:new(x,y,z)
     setmetatable(kaizoBot, self)
     self.__index = self
 
-    kaizoBot.body = MainLevel.world:newCapsuleCollider(x,y,z,0.5,1)
+    kaizoBot.body = MainLevel.world:newBoxCollider(x,y,z,1,1.7,1)
     kaizoBot.body:setTag("enemy")
     kaizoBot.body:setFriction(1)
     kaizoBot.body:setLinearDamping(1)
@@ -32,7 +32,6 @@ function BrainEvilKillerBot:new(x,y,z)
     kaizoBot.class = nil
 
     kaizoBot.body:setMass(1700.0001220703)
-    kaizoBot.body:setOrientation(math.pi/2, 1, 0, 0)
 
     return kaizoBot
 end
@@ -277,7 +276,7 @@ function BrainEvilKillerBot:preupdate(dt)
     end
     self.body:applyLinearImpulse(applyx * 20, applyy * 20, applyz * 20)
     self.body:setAngularVelocity(0,0,0)
-    self.body:setOrientation(math.pi/2, 1, 0, 0)
+    self.body:setOrientation(0, 0, 0, 0)
     
 end
 
