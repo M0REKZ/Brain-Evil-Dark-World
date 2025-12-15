@@ -183,6 +183,19 @@ function BrainEvilLevelLoader:HandleLevelNodeForDarkWorld(id, nodeid, objname, m
             MainLevel:add_object(checkpoint)
         end
 
+        if objname == "Checkpoint2" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            local checkpoint = KaizoCheckpoint:new(x,y,z)
+            checkpoint.checkpoint_number = 2
+            MainLevel:add_object(checkpoint)
+        end
+
+        if objname == "Exit" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            MainLevel.exit_pos = {x = x, y = y, z = z}
+            MainLevel.exit_distance = 7
+        end
+
         if objname == "Door1" then
             local x,y,z = map.model.model:getNodePosition(nodeid)
             local door = KaizoCube:new(x,y,z, 30,30,0.1)
@@ -199,6 +212,11 @@ function BrainEvilLevelLoader:HandleLevelNodeForDarkWorld(id, nodeid, objname, m
         local x,y,z = map.model.model:getNodePosition(nodeid)
         local bot = BrainEvilKillerBot:new(x,y,z)
         bot:set_class(1)
+        MainLevel:add_object(bot)
+    elseif objname == "BrainEvilShootBot" then
+        local x,y,z = map.model.model:getNodePosition(nodeid)
+        local bot = BrainEvilKillerBot:new(x,y,z)
+        bot:set_class(2)
         MainLevel:add_object(bot)
     end
 end
@@ -249,5 +267,12 @@ function BrainEvilLevelLoader:HandleLevelNoMoreTargets()
         KaizoSaveHandler.savedata.saved_checkpoint = 0
         self:LoadSpecificLevel(2)
         return
+    end
+end
+
+function BrainEvilLevelLoader:HandleExitTouch()
+    if KaizoSaveHandler.savedata.saved_level == 2 then
+        KaizoMovieHandler:PlayMovie("demoend")
+        self:LoadMenuLevel()
     end
 end

@@ -69,6 +69,25 @@ function BrainEvilKillerBot:set_class(class)
         }
         self.dont_slide = true
         self.slope_smart = true
+    elseif class == 2 then -- shoot bot
+        self.max_intended_vel = {x = 30, y = 50, z = 30} -- even slower
+        self.health = 20
+        self.attack_delay = FPS/6
+        self.textures = {
+            stay = MainLevel:add_image(KaizoImage:new("entity_shootbot.png")),
+            shoot = MainLevel:add_image(KaizoImage:new("entity_shootbot_shoot.png")),
+            walk1 = MainLevel:add_image(KaizoImage:new("entity_shootbot_walk1.png")),
+            walk2 = MainLevel:add_image(KaizoImage:new("entity_shootbot_walk2.png")),
+            attack1 = MainLevel:add_image(KaizoImage:new("entity_shootbot_attack1.png")),
+            attack2 = MainLevel:add_image(KaizoImage:new("entity_shootbot_attack2.png")),
+        }
+        self.sounds = {
+            shoot = MainLevel:add_sound(KaizoSound:new("laser_shoot.wav")),
+            slice = MainLevel:add_sound(KaizoSound:new("slice.mp3")),
+            hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
+        }
+        self.dont_slide = true
+        self.slope_smart = true
     end
 end
 
@@ -157,12 +176,29 @@ function BrainEvilKillerBot:preupdate(dt)
             else
                 self.attack = false
             end
+            --[[if self.class == 2 then
+                self.shoot_timer = FPS * 3
+                self.going_to_shoot = false
+                self.shooting = false
+            end]]
             self.intended_vel.x = 0
             self.intended_vel.z = 0
             self.dirvel = 0
         end
 
+        if distance < 60 then
+            self:shoot_player()
+            if self.going_to_shoot or self.shooting then
+                self.attack = false
+            end
+        end
+
     else
+        if self.class == 2 then
+            self.shoot_timer = FPS * 3
+            self.going_to_shoot = false
+            self.shooting = false
+        end
         self.attack = false
         self.intended_vel.x = 0
         self.intended_vel.z = 0
@@ -338,6 +374,81 @@ function BrainEvilKillerBot:postupdate(dt)
     self.prevhealth = self.health
 end
 
+function BrainEvilKillerBot:shoot_player()
+    if not self.detected_player then
+        return
+    end
+
+    if self.detected_player and self.detected_player.marked_for_deletion then
+        return
+    end
+
+    if self.class == 2 then
+        self.shooting = false
+        if not self.shoot_timer then
+            self.shoot_timer = FPS * 3
+        elseif self.shoot_timer > FPS then
+            self.shoot_timer = self.shoot_timer - 1
+        elseif self.shoot_timer <= FPS and self.shoot_timer > 0 then
+            self.intended_vel.x = 0
+            self.intended_vel.z = 0
+            self.going_to_shoot = true
+            self.shoot_timer = self.shoot_timer - 1
+        else
+            self.shooting = true
+            self.going_to_shoot = false
+
+            local x,y,z = self.body:getPosition()
+            local px, py, pz = self.detected_player.body:getPosition()
+            local vec3me = lovr.math.vec3(x,y,z)
+
+            local playerbody, playershape, rpx, rpy, rpz = MainLevel.world:raycast(x,y,z,px, py, pz, "player")
+            local solidbody, solidshape, spx, spy, spz = MainLevel.world:raycast(x,y,z,px, py, pz, "solid")
+
+            local dodamage = false
+
+            self.shoot_point = {}
+
+            if playerbody then
+                local pdistance = vec3me:distance(rpx,rpy,rpz)
+                if solidbody then
+                    local sdistance = vec3me:distance(spx,spy,spz)
+
+                    if sdistance > pdistance then
+                        dodamage = true
+                        self.shoot_point.x, self.shoot_point.y, self.shoot_point.z = rpx, rpy, rpz
+                    else
+                        self.shoot_point.x, self.shoot_point.y, self.shoot_point.z = spx, spy, spz
+                    end
+                else
+                    dodamage = true
+                    self.shoot_point.x, self.shoot_point.y, self.shoot_point.z = rpx, rpy, rpz
+                end
+            else
+                if solidbody then
+                    local sdistance = vec3me:distance(spx,spy,spz)
+
+                    self.shoot_point.x, self.shoot_point.y, self.shoot_point.z = spx, spy, spz
+                else
+                    self.shoot_point = nil
+                    self.shooting = false
+                end
+            end
+
+            if dodamage then
+                self.detected_player.health = self.detected_player.health - 50
+            end
+
+            if self.shooting then
+                self.sounds.shoot:stop()
+                self.sounds.shoot:play()
+            end
+
+            self.shoot_timer = FPS * 3
+        end
+    end
+end
+
 function BrainEvilKillerBot:attack_player()
 
     if not self.detected_player then
@@ -360,7 +471,7 @@ function BrainEvilKillerBot:attack_player()
         if playerbody then
             self.detected_player.health = self.detected_player.health - 5
         end
-    elseif self.class == 1 then
+    elseif self.class == 1 or self.class == 2 then
         local x,y,z = self.body:getPosition()
 
         local vec3me = lovr.math.vec3(x,y,z)
@@ -380,7 +491,18 @@ function BrainEvilKillerBot:draw(pass)
 
     local x,y,z = self.body:getPosition()
 
-    if self.frame == 0 then
+    if self.class == 2 and (self.going_to_shoot or self.shooting) then
+        self.textures.shoot:draw_billboard(pass,x,y,z,1.45)
+        if self.shooting then
+            --pass:line(x,y,z,self.shoot_point.x,self.shoot_point.y,self.shoot_point.z)
+            local tempvec3 = lovr.math.vec3(x,y,z)
+            local tempvec32 = lovr.math.vec3(self.shoot_point.x, self.shoot_point.y, self.shoot_point.z)
+            --tempvec3:transform(tempmat4)
+            pass:setColor(1,0,0,1)
+            pass:cylinder(tempvec3, tempvec32, 0.1, false)
+            pass:setColor(1,1,1,1)
+        end
+    elseif self.frame == 0 then
         self.textures.stay:draw_billboard(pass,x,y,z,1.45)
     elseif self.frame == 1 then
         self.textures.walk1:draw_billboard(pass,x,y,z,1.45)

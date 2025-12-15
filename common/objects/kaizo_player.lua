@@ -406,6 +406,15 @@ function KaizoPlayer:postupdate(dt)
     end
 
     self.prevhealth = self.health
+
+    if MainLevel.exit_pos then
+        local vec3exit = lovr.math.vec3(MainLevel.exit_pos.x,MainLevel.exit_pos.y,MainLevel.exit_pos.z)
+        local x,y,z = self.body:getPosition()
+        local distance = vec3exit:distance(x,y,z)
+        if distance < MainLevel.exit_distance then
+            BrainEvilLevelLoader:HandleExitTouch()
+        end
+    end
 end
 
 function KaizoPlayer:draw(pass)

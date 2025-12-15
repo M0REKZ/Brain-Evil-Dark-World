@@ -14,6 +14,7 @@ Music/Sounds:
 "start.mp3" CC0 License (from freesound.org)
 "music_wind.wav" by nsstudios, CC BY 4.0 License (https://freesound.org/s/651541/)
 "saw.wav" by DrinkingWindGames, CC BY 4.0 License (https://freesound.org/s/463731/)
+"laser_shoot.wav" CC0 License (from freesound.org)
 
 The following Music/Sounds are made by "Karl Casey @ White Bat Audio" (https://karlcasey.bandcamp.com/), all this music has the following license:
 
