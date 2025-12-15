@@ -205,8 +205,8 @@ function lovr.draw(pass)
 
         KaizoCamera.look_at_x, KaizoCamera.look_at_y, KaizoCamera.look_at_z = x,y,z
         KaizoCamera.render_quat:setEuler((KaizoCamera.angley/2 - math.pi/4), (KaizoCamera.anglex * -1 + math.pi/2), 0)
-        pass:setViewPose(1, mat4():lookAt(lovr.math.vec3(KaizoCamera.x, KaizoCamera.y, KaizoCamera.z), lovr.math.vec3(x, y, z)), true)
     end
+    pass:setViewPose(1, mat4():lookAt(lovr.math.vec3(KaizoCamera.x, KaizoCamera.y, KaizoCamera.z), lovr.math.vec3(KaizoCamera.look_at_x, KaizoCamera.look_at_y, KaizoCamera.look_at_z)), true)
     MainLevel:draw(pass)
 
     KaizoPauseHandler:draw(pass)
