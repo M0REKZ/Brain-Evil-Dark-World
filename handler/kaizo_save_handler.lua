@@ -1,3 +1,5 @@
+-- Brain Evil: Dark World (c) Copyright Benjamín Gajardo All rights reserved
+-- See license.txt at the root of the software directory for the license
 
 require "handler.kaizo_json_handler"
 

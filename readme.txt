@@ -1,7 +1,8 @@
+Check "license.txt" for the license for this software (which is made by +KZ)
 
 Licenses for third party assets used in the game:
 
-NOTE: some assets were modified for this game
+NOTE: some assets were modified for this game as the asset license allowed it
 
 Music/Sounds:
 

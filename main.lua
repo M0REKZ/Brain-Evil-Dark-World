@@ -1,3 +1,6 @@
+-- Brain Evil: Dark World (c) Copyright Benjamín Gajardo All rights reserved
+-- See license.txt at the root of the software directory for the license
+
 require "common.kaizo_ffi_binds"
 require "common.kaizo_camera"
 require "common.kaizo_image"
