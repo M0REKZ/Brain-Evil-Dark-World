@@ -10,5 +10,6 @@ function lovr.conf(t)
     t.window.title = "Brain Evil: Dark World"
     t.graphics.vsync = false
     t.window.resizable = true
+    t.window.icon = "data/images/icon.png"
 end
 
