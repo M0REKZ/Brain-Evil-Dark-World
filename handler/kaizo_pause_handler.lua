@@ -27,7 +27,6 @@ KaizoPauseHandler.keyboard.key_names = {
     "down",
     "left",
     "right",
-    "run",
 }
 
 local proportion = 1
