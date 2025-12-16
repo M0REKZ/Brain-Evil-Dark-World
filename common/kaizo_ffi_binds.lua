@@ -2,6 +2,7 @@
 -- See license.txt at the root of the software directory for the license
 
 local ffi = require "ffi"
+local glfw = ffi.os == 'Windows' and ffi.load( 'glfw3' ) or ffi.C
 
 ffi.cdef [[
         enum {
@@ -34,19 +35,19 @@ ffi.cdef [[
 
 function SetMouseGrabbed(enable)
     -- grab mouse, must replace with setMouseGrabbed in 0.19.0 later
-    ffi.C.glfwSetInputMode(ffi.C.os_get_glfw_window(), ffi.C.GLFW_CURSOR, enable and ffi.C.GLFW_CURSOR_DISABLED or ffi.C.GLFW_CURSOR_NORMAL)
+    glfw.glfwSetInputMode(glfw.os_get_glfw_window(), glfw.GLFW_CURSOR, enable and glfw.GLFW_CURSOR_DISABLED or glfw.GLFW_CURSOR_NORMAL)
 end
 
 function SetFullscreen()
     KaizoSaveHandler.config.fullscreen = true
     local monitor_rectangle = ffi.new("int[4]")
-    local monitor = ffi.C.glfwGetPrimaryMonitor()
-    ffi.C.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
-    ffi.C.glfwSetWindowMonitor(ffi.C.os_get_glfw_window(), monitor, monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3], -1)
+    local monitor = glfw.glfwGetPrimaryMonitor()
+    glfw.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
+    glfw.glfwSetWindowMonitor(glfw.os_get_glfw_window(), monitor, monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3], -1)
 end
 
 function SetWindowed()
     KaizoSaveHandler.config.fullscreen = false
-    local window = ffi.C.os_get_glfw_window()
-    ffi.C.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
+    local window = glfw.os_get_glfw_window()
+    glfw.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
 end
