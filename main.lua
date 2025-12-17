@@ -94,7 +94,11 @@ function lovr.update(dt)
 
     if KaizoMovieHandler.playing_movie then
         if lovr.system.isWindowVisible() and lovr.system.isWindowOpen() then
-            KaizoMovieHandler:UpdateMovie(dt)
+            time = time + dt
+            while time >= timestep do
+                KaizoMovieHandler:UpdateMovie(dt)
+                time = time - timestep
+            end
         end
     else
 
