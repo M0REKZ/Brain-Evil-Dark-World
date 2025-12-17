@@ -30,6 +30,8 @@ ffi.cdef [[
         void glfwGetWindowSize(GLFWwindow *window, int *width, int *height);
         void glfwSetWindowSize(GLFWwindow *window, int width, int height);
         void glfwSetWindowMonitor(GLFWwindow * window, GLFWmonitor * monitor, int xpos, int ypos, int width, int height, int refreshRate);
+        void glfwMaximizeWindow(GLFWwindow * window);
+        void glfwRestoreWindow(GLFWwindow * window);
     ]]
 
 
@@ -40,14 +42,22 @@ end
 
 function SetFullscreen()
     KaizoSaveHandler.config.fullscreen = true
-    local monitor_rectangle = ffi.new("int[4]")
-    local monitor = glfw.glfwGetPrimaryMonitor()
-    glfw.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
-    glfw.glfwSetWindowMonitor(ffi.C.os_get_glfw_window(), monitor, monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3], -1)
+    if ffi.os == 'Windows' then --on windows set fullscreen freezes the game
+        glfw.glfwMaximizeWindow(ffi.C.os_get_glfw_window())
+    else
+        local monitor_rectangle = ffi.new("int[4]")
+        local monitor = glfw.glfwGetPrimaryMonitor()
+        glfw.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
+        glfw.glfwSetWindowMonitor(ffi.C.os_get_glfw_window(), monitor, monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3], -1)
+    end
 end
 
 function SetWindowed()
     KaizoSaveHandler.config.fullscreen = false
-    local window = ffi.C.os_get_glfw_window()
-    glfw.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
+    if ffi.os == 'Windows' then --on windows set fullscreen freezes the game
+        glfw.glfwRestoreWindow(ffi.C.os_get_glfw_window())
+    else
+        local window = ffi.C.os_get_glfw_window()
+        glfw.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
+    end
 end
