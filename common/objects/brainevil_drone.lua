@@ -165,7 +165,6 @@ function BrainEvilDrone:preupdate(dt)
         if self.detected_player then
             local px, py, pz = self.detected_player.body:getPosition()
             self.intended_vel.y = (py - y)*3
-            print(self.intended_vel.y)
             if self.intended_vel.y < 5 then
                 self.intended_vel.y = 5
             elseif self.intended_vel.y > 15 then
