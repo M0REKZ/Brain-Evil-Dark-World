@@ -20,6 +20,7 @@ KaizoSaveHandler.config.volume = nil
 
 KaizoSaveHandler.savedata.saved_level = nil
 KaizoSaveHandler.savedata.saved_checkpoint = nil
+KaizoSaveHandler.savedata.player_stick = nil
 
 function KaizoSaveHandler:Init()
     self:InitConfig()
@@ -41,6 +42,7 @@ function KaizoSaveHandler:InitSaveData()
     self:LoadSaveData()
     self.savedata.saved_level = self.savedata.saved_level or 1
     self.savedata.saved_checkpoint = self.savedata.saved_checkpoint or 0
+    self.savedata.player_stick = self.savedata.player_stick or -1
 end
 
 function KaizoSaveHandler:SaveConfig()
