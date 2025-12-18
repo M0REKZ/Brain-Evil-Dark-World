@@ -19,7 +19,7 @@ function KaizoLevel:new()
             "pickup",
         }
     })
-    kaizoLevel.world:disableCollisionBetween("player","enemy")
+    --kaizoLevel.world:disableCollisionBetween("player","enemy")
     kaizoLevel.world:disableCollisionBetween("enemy_nocol","enemy")
     kaizoLevel.world:disableCollisionBetween("decoration","enemy")
     kaizoLevel.world:disableCollisionBetween("decoration","player")

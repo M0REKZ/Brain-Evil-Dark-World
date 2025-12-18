@@ -7,8 +7,7 @@ function KaizoPlayer:new(x,y,z)
     local kaizoPlayer = {}
     setmetatable(kaizoPlayer, self)
     self.__index = self
-
-    kaizoPlayer.body = MainLevel.world:newBoxCollider(x,y,z,1,1.45,1)
+    kaizoPlayer.body = MainLevel.world:newCapsuleCollider(x,y,z,0.45,1.45/2)
     kaizoPlayer.body:setTag("player")
     kaizoPlayer.body:setFriction(0)
     kaizoPlayer.body:setLinearDamping(1)
@@ -49,6 +48,9 @@ function KaizoPlayer:new(x,y,z)
 
     kaizoPlayer.waiting_to_release_attack = false
     kaizoPlayer.prevdirkey = -1
+
+    kaizoPlayer.body:setMass(1450)
+    kaizoPlayer.body:setOrientation(math.pi/2, 1, 0, 0)
 
     return kaizoPlayer
 end
@@ -259,7 +261,7 @@ function KaizoPlayer:preupdate(dt)
 
     self.body:applyLinearImpulse(applyx * 20, applyy * 20, applyz * 20)
     self.body:setAngularVelocity(0,0,0)
-    self.body:setOrientation(0, 0, 0, 0)
+    self.body:setOrientation(math.pi/2, 1, 0, 0)
     
 end
 
@@ -302,7 +304,6 @@ function KaizoPlayer:attack_enemy()
 
     local x,y,z = self.body:getPosition()
     if KaizoSaveHandler.config.first_person then
-        print("first person attack")
         local attackx = -math.cos(KaizoCamera.anglex)
         local attackz = -math.sin(KaizoCamera.anglex)
 
