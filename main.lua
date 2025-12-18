@@ -200,8 +200,8 @@ function lovr.draw(pass)
         if KaizoSaveHandler.config.first_person then
             KaizoCamera.look_at_x = x - (math.cos(KaizoCamera.anglex)* 2)
             KaizoCamera.look_at_z = z - (math.sin(KaizoCamera.anglex)* 2)
-            KaizoCamera.look_at_y = y - (math.cos(KaizoCamera.angley)* 2)
-            KaizoCamera.x, KaizoCamera.y, KaizoCamera.z = x,y,z
+            KaizoCamera.look_at_y = (y + 0.5) - (math.cos(KaizoCamera.angley)* 2)
+            KaizoCamera.x, KaizoCamera.y, KaizoCamera.z = x,y + 0.5,z
         else
             KaizoCamera.x = x + KaizoCamera.away * (math.cos(KaizoCamera.anglex)* 2)
             KaizoCamera.z = z + KaizoCamera.away * (math.sin(KaizoCamera.anglex)* 2)

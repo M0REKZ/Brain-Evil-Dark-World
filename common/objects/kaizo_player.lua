@@ -22,6 +22,7 @@ function KaizoPlayer:new(x,y,z)
         fall = MainLevel:add_image(KaizoImage:new("entity_chydia_fall.png")),
         hurt = MainLevel:add_image(KaizoImage:new("entity_chydia_damage.png")),
         attack = MainLevel:add_image(KaizoImage:new("entity_chydia_attack1.png")),
+        arm = MainLevel:add_image(KaizoImage:new("chydia_arm.png")),
     }
     kaizoPlayer.sounds = {
         jump = MainLevel:add_sound(KaizoSound:new("chydia_jump.mp3")),
@@ -446,29 +447,56 @@ function KaizoPlayer:postupdate(dt)
 end
 
 function KaizoPlayer:draw(pass)
-    local x,y,z = self.body:getPosition()
+    if KaizoSaveHandler.config.first_person then
+        if not KaizoPauseHandler.active then
+            Set2DPass(pass,true)
 
-    if self.frame == 0 or self.frame == 2 then
-        self.textures.stay:draw_billboard(pass,x,y,z,nil,self.frameflip)
-    elseif self.frame == 1 then
-        self.textures.walk1:draw_billboard(pass,x,y,z,nil,self.frameflip)
-    elseif self.frame == 3 then
-        self.textures.walk2:draw_billboard(pass,x,y,z,nil,self.frameflip)
-    elseif self.frame == 4 then
-        self.textures.run:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-    elseif self.frame == 5 then
-        self.textures.run2:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-    elseif self.frame == 6 then
-        self.textures.jump:draw_billboard(pass,x,y,z,nil,self.frameflip)
-    elseif self.frame == 7 then
-        self.textures.fall:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-    elseif self.frame == 8 then
-        self.textures.hurt:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-    elseif self.frame == 9 then
-        self.textures.attack:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+            local width, height = lovr.system.getWindowDimensions()
+            local proportion = (width/512)
+
+            local arm_y_offset = 0
+            local arm_x_offset = 0
+
+            if self.frame == 1 or self.frame == 4 then
+                arm_y_offset = -2
+            elseif self.frame == 3 or self.frame == 5 then
+                arm_y_offset = 2
+            elseif self.frame == 9 then
+                arm_y_offset = 20
+                arm_x_offset = 20
+            end
+
+            pass:setMaterial(self.textures.arm.texture)
+            pass:plane(width - (120 + arm_x_offset) * proportion, height - (60 + arm_y_offset) * proportion, 0, 160 * proportion, -160 * proportion)
+            pass:setMaterial()
+
+            Set2DPass(pass,false)
+        end
+    else
+        local x,y,z = self.body:getPosition()
+
+        if self.frame == 0 or self.frame == 2 then
+            self.textures.stay:draw_billboard(pass,x,y,z,nil,self.frameflip)
+        elseif self.frame == 1 then
+            self.textures.walk1:draw_billboard(pass,x,y,z,nil,self.frameflip)
+        elseif self.frame == 3 then
+            self.textures.walk2:draw_billboard(pass,x,y,z,nil,self.frameflip)
+        elseif self.frame == 4 then
+            self.textures.run:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+        elseif self.frame == 5 then
+            self.textures.run2:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+        elseif self.frame == 6 then
+            self.textures.jump:draw_billboard(pass,x,y,z,nil,self.frameflip)
+        elseif self.frame == 7 then
+            self.textures.fall:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+        elseif self.frame == 8 then
+            self.textures.hurt:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+        elseif self.frame == 9 then
+            self.textures.attack:draw_billboard(pass,x,y,z,1.2,self.frameflip)
+        end
+        --local angle, ax, ay, az = self.body:getOrientation()
+        --pass:box(x,y,z, 1, 1.45, 1, angle, ax, ay, az)
     end
-    --local angle, ax, ay, az = self.body:getOrientation()
-    --pass:box(x,y,z, 1, 1.45, 1, angle, ax, ay, az)
 
     self:draw_hud(pass)
 end
@@ -495,7 +523,7 @@ function KaizoPlayer:draw_hud(pass)
     pass:setColor(1, 0, 0)
     pass:plane(width/12, height-18 * proportion, 0, 70 * proportion, 10 * proportion)
     pass:setColor(0, 1, 0)
-    pass:plane(width/12 - ((70-(70*(self.health/100)))/2) * proportion, height-18 * proportion, 0, 70*(self.health/100) * proportion, 10 * proportion)
+    pass:plane(width/12 - ((70-(70*(math.max(self.health,0)/100)))/2) * proportion, height-18 * proportion, 0, 70*(self.health/100) * proportion, 10 * proportion)
     pass:setColor(1, 1, 1)
     Set2DPass(pass,false)
 end
