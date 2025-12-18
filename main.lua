@@ -197,9 +197,17 @@ function lovr.draw(pass)
     if MainLevel.camera_following_object then
         local x, y, z = MainLevel.camera_following_object.body:getPosition()
 
-        KaizoCamera.x = x + KaizoCamera.away * (math.cos(KaizoCamera.anglex)* 2)
-        KaizoCamera.z = z + KaizoCamera.away * (math.sin(KaizoCamera.anglex)* 2)
-        KaizoCamera.y = y + 0.5 + KaizoCamera.away * (math.cos(KaizoCamera.angley)* 2)
+        if KaizoSaveHandler.config.first_person then
+            KaizoCamera.look_at_x = x - (math.cos(KaizoCamera.anglex)* 2)
+            KaizoCamera.look_at_z = z - (math.sin(KaizoCamera.anglex)* 2)
+            KaizoCamera.look_at_y = y - (math.cos(KaizoCamera.angley)* 2)
+            KaizoCamera.x, KaizoCamera.y, KaizoCamera.z = x,y,z
+        else
+            KaizoCamera.x = x + KaizoCamera.away * (math.cos(KaizoCamera.anglex)* 2)
+            KaizoCamera.z = z + KaizoCamera.away * (math.sin(KaizoCamera.anglex)* 2)
+            KaizoCamera.y = y + 0.5 + KaizoCamera.away * (math.cos(KaizoCamera.angley)* 2)
+            KaizoCamera.look_at_x, KaizoCamera.look_at_y, KaizoCamera.look_at_z = x,y,z
+        end
 
         local collide, cx, cy, cz
         collide, _, cx, cy, cz = MainLevel.world:raycast(x, y, z, KaizoCamera.x, KaizoCamera.y, KaizoCamera.z, "solid")
@@ -210,7 +218,6 @@ function lovr.draw(pass)
             KaizoCamera.y = cy - 0.1 * (math.cos(KaizoCamera.angley)* 2)
         end
 
-        KaizoCamera.look_at_x, KaizoCamera.look_at_y, KaizoCamera.look_at_z = x,y,z
         KaizoCamera.render_quat:setEuler((KaizoCamera.angley/2 - math.pi/4), (KaizoCamera.anglex * -1 + math.pi/2), 0)
     end
     pass:setViewPose(1, mat4():lookAt(lovr.math.vec3(KaizoCamera.x, KaizoCamera.y, KaizoCamera.z), lovr.math.vec3(KaizoCamera.look_at_x, KaizoCamera.look_at_y, KaizoCamera.look_at_z)), true)

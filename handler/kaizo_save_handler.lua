@@ -17,6 +17,8 @@ KaizoSaveHandler.config.key_right = nil
 KaizoSaveHandler.config.key_jump = nil
 KaizoSaveHandler.config.fullscreen = true
 KaizoSaveHandler.config.volume = nil
+KaizoSaveHandler.config.first_person = nil
+KaizoSaveHandler.config.key_first_person = nil
 
 KaizoSaveHandler.savedata.saved_level = nil
 KaizoSaveHandler.savedata.saved_checkpoint = nil
@@ -36,6 +38,8 @@ function KaizoSaveHandler:InitConfig()
     self.config.key_jump = self.config.key_jump or "space"
 
     self.config.volume = self.config.volume or 0.5
+    self.config.first_person = self.config.first_person or false
+    self.config.key_first_person = self.config.key_first_person or "f"
 end
 
 function KaizoSaveHandler:InitSaveData()

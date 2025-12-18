@@ -52,6 +52,7 @@ function BrainEvilKillerBot:set_class(class)
             slice = MainLevel:add_sound(KaizoSound:new("slice.mp3")),
             hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
         }
+        self.dont_slide = true
     elseif class == 1 then -- saw bot
         self.max_intended_vel = {x = 45, y = 50, z = 45} --slower
         self.health = 10

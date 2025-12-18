@@ -301,46 +301,72 @@ function KaizoPlayer:attack_enemy()
     self.sounds.attack:play()
 
     local x,y,z = self.body:getPosition()
-    local found_enemies = {}
-    local vec3me
-    local distance
-    local cx, cy, cz
+    if KaizoSaveHandler.config.first_person then
+        print("first person attack")
+        local attackx = -math.cos(KaizoCamera.anglex)
+        local attackz = -math.sin(KaizoCamera.anglex)
 
-    local closest_distance = 999999
-    local closest_enemy = nil
+        local x,y,z = self.body:getPosition()
 
-    for index, object in ipairs(MainLevel.objects) do
-        if object.marked_for_deletion then
-            goto continue
-        end
-        if not object.body then
-            goto continue
-        end
+        local body = MainLevel.world:raycast(x,y,z,x + attackx, y, z + attackz, "enemy enemy_nocol")
 
-        if string.sub(object.body:getTag(), 1, #"enemy") ~= "enemy" then
-            goto continue
-        end
-        
-        vec3me = lovr.math.vec3(x,y,z)
-        cx,cy,cz = object.body:getPosition()
-        distance = vec3me:distance(cx,cy,cz)
+        if body then
+            local enemy = nil
+            for index, object in ipairs(MainLevel.objects) do
+                if object.marked_for_deletion then
+                    goto continue
+                end
+                if object.body ~= body then
+                    goto continue
+                end
 
-        if distance <= 1 then
-            found_enemies[#found_enemies+1] = object
-            if distance <= closest_distance then
-                closest_distance = distance
-                closest_enemy = object
+                enemy = object
+
+                ::continue::
+            end
+            if enemy then
+                enemy.health = enemy.health - 1
             end
         end
+    else
+        local found_enemies = {}
+        local vec3me
+        local distance
+        local cx, cy, cz
 
-        ::continue::
-    end
+        local closest_distance = 999999
+        local closest_enemy = nil
 
-    --for index, enemy in ipairs(found_enemies) do
-    --    enemy.health = enemy.health - 1
-    --end
-    if closest_enemy then
-        closest_enemy.health = closest_enemy.health - 1
+        for index, object in ipairs(MainLevel.objects) do
+            if object.marked_for_deletion then
+                goto continue
+            end
+            if not object.body then
+                goto continue
+            end
+
+            if string.sub(object.body:getTag(), 1, #"enemy") ~= "enemy" then
+                goto continue
+            end
+            
+            vec3me = lovr.math.vec3(x,y,z)
+            cx,cy,cz = object.body:getPosition()
+            distance = vec3me:distance(cx,cy,cz)
+
+            if distance <= 1 then
+                found_enemies[#found_enemies+1] = object
+                if distance <= closest_distance then
+                    closest_distance = distance
+                    closest_enemy = object
+                end
+            end
+
+            ::continue::
+        end
+
+        if closest_enemy then
+            closest_enemy.health = closest_enemy.health - 1
+        end
     end
 
     self.attack_delay = FPS/5
