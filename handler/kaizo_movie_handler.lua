@@ -10,6 +10,13 @@ KaizoMovieHandler.music = nil
 KaizoMovieHandler.movie_json = nil
 KaizoMovieHandler.number = 1
 
+KaizoMovieHandler.pressing_enter = false
+
+local width, height = 512,256+128
+local center = {x = width/2, y = height/2}
+local proportion = 1
+--local skip_movie_message_time = 0
+
 function KaizoMovieHandler:PlayMovie(movie_name)
     if MainLevel.music then
         MainLevel.music:pause()
@@ -21,12 +28,26 @@ function KaizoMovieHandler:PlayMovie(movie_name)
         error("ERROR: movie not found!")
     end
     self.movie_json = KaizoJSONHandler:FromJSON(moviejson)
+    --skip_movie_message_time = 5 * FPS
     self:GoToScene(1)
 end
 
 function KaizoMovieHandler:UpdateMovie(dt)
+    width, height = lovr.system.getWindowDimensions()
+    center = {x = width/2, y = height/2}
+    proportion = (width/512)
+
+    local do_skip = false
+
+    if not self.pressing_enter and KaizoInputHandler.jump then
+        do_skip = true
+        self.pressing_enter = true
+    elseif self.pressing_enter and not KaizoInputHandler.jump then
+        self.pressing_enter = false
+    end
+
     self.ticks = self.ticks - 1
-    if self.ticks <= 0 then
+    if self.ticks <= 0 or do_skip then
         if not self:GoToScene(self.number + 1) then
             self.number = self.number + 1
         end
@@ -37,7 +58,7 @@ end
 function KaizoMovieHandler:GoToScene(num)
     self:ResetScene()
 
-    if not self.movie_json.images[num] then --finish movie
+    if not self.movie_json or not self.movie_json.images[num] then --finish movie
         self:Reset()
         if MainLevel.music then
             MainLevel.music:play()
@@ -75,6 +96,13 @@ function KaizoMovieHandler:DrawMovie(pass)
     pass:setMaterial(self.img.texture)
     pass:plane(width/2, height/2, 0, width, -height)
     pass:setMaterial()
+
+    --if skip_movie_message_time > 0 then
+    --    skip_movie_message_time = skip_movie_message_time - 1
+    SetTextShader(pass)
+    pass:text("Press '"..KaizoSaveHandler.config.key_jump.."' to skip", center.x, height - 25, 0, 25 * proportion)
+    SetGameShader(pass)
+    --end
 
     Set2DPass(pass, false)
 end

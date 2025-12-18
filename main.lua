@@ -12,6 +12,7 @@ require "common.objects.kaizo_player"
 require "common.objects.brainevil_killerbot"
 require "common.objects.brainevil_drone"
 require "common.objects.brainevil_victim"
+require "common.objects.kaizo_stick"
 require "handler.kaizo_input_handler"
 require "handler.kaizo_pause_handler"
 require "handler.kaizo_movie_handler"
@@ -96,6 +97,7 @@ function lovr.update(dt)
         if lovr.system.isWindowVisible() and lovr.system.isWindowOpen() then
             time = time + dt
             while time >= timestep do
+                KaizoInputHandler:handle_input()
                 KaizoMovieHandler:UpdateMovie(dt)
                 time = time - timestep
             end

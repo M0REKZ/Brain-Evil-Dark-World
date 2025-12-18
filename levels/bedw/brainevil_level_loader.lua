@@ -276,7 +276,8 @@ end
 
 function BrainEvilLevelLoader:HandleExitTouch()
     if KaizoSaveHandler.savedata.saved_level == 2 then
-        KaizoMovieHandler:PlayMovie("demoend")
-        self:LoadMenuLevel()
+        KaizoSaveHandler.savedata.saved_level = 3
+        KaizoSaveHandler.savedata.saved_checkpoint = 0
+        self:LoadSpecificLevel(3)
     end
 end
