@@ -51,6 +51,7 @@ function BrainEvilLevelLoader:LoadFirstLevel()
     MainLevel:add_object(map)]]
     KaizoSaveHandler.savedata.saved_level = 1
     KaizoSaveHandler.savedata.saved_checkpoint = 0
+    KaizoSaveHandler.savedata.player_stick = -1
     KaizoMovieHandler:PlayMovie("tutorial")
     self:LoadSpecificLevel(1)
 end

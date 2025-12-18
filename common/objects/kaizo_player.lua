@@ -22,7 +22,19 @@ function KaizoPlayer:new(x,y,z)
         fall = MainLevel:add_image(KaizoImage:new("entity_chydia_fall.png")),
         hurt = MainLevel:add_image(KaizoImage:new("entity_chydia_damage.png")),
         attack = MainLevel:add_image(KaizoImage:new("entity_chydia_attack1.png")),
+
+        stay_stick = MainLevel:add_image(KaizoImage:new("chydia_stick.png")),
+        walk_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_walk1.png")),
+        run_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_run1.png")),
+        run2_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_run2.png")),
+        jump_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_jump.png")),
+        fall_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_fall.png")),
+        hurt_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_hurt.png")),
+        attack_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_attack.png")),
+        charge_stick = MainLevel:add_image(KaizoImage:new("chydia_stick_attack_charge.png")),
+
         arm = MainLevel:add_image(KaizoImage:new("chydia_arm.png")),
+        stick = MainLevel:add_image(KaizoImage:new("chydia_arm_stick.png")),
     }
     kaizoPlayer.sounds = {
         jump = MainLevel:add_sound(KaizoSound:new("chydia_jump.mp3")),
@@ -52,6 +64,9 @@ function KaizoPlayer:new(x,y,z)
 
     kaizoPlayer.body:setMass(1450)
     kaizoPlayer.body:setOrientation(math.pi/2, 1, 0, 0)
+
+    kaizoPlayer.current_weapon = "hand"
+    kaizoPlayer.attack_charge = 0
 
     return kaizoPlayer
 end
@@ -88,6 +103,13 @@ function KaizoPlayer:preupdate(dt)
         self.sounds.death:play()
         return
     end
+
+    if KaizoInputHandler.weapon_hand then
+        self.current_weapon = "hand"
+    elseif KaizoSaveHandler.savedata.player_stick >= 0 and KaizoInputHandler.weapon_stick then
+        self.current_weapon = "stick"
+    end
+
     if KaizoInputHandler.up or KaizoInputHandler.left or KaizoInputHandler.right or KaizoInputHandler.down then
 
         if KaizoInputHandler.up and KaizoInputHandler.left then
@@ -149,10 +171,23 @@ function KaizoPlayer:preupdate(dt)
     if self.attack_delay > 0 then
         self.attack_delay = self.attack_delay - 1
     elseif KaizoInputHandler.attack and not self.waiting_to_release_attack then
-        self:attack_enemy()
+        if self.current_weapon == "stick" then
+            if self.attack_charge == 0 then
+                self.attack_charge = FPS/3
+            end
+        else
+            self:attack_enemy()
+        end
         self.waiting_to_release_attack = true
     elseif not KaizoInputHandler.attack then
         self.waiting_to_release_attack = false
+    end
+
+    if self.attack_charge > 0 then
+        self.attack_charge = self.attack_charge - 1
+        if self.attack_charge == 0 then
+            self:attack_enemy()
+        end
     end
 
     if self.intended_vel.y > -5 then
@@ -305,8 +340,15 @@ function KaizoPlayer:attack_enemy()
 
     local x,y,z = self.body:getPosition()
     if KaizoSaveHandler.config.first_person then
-        local attackx = -math.cos(KaizoCamera.anglex)
-        local attackz = -math.sin(KaizoCamera.anglex)
+        local attackx, attackz
+
+        if self.current_weapon == "hand" then
+            attackx = -math.cos(KaizoCamera.anglex)
+            attackz = -math.sin(KaizoCamera.anglex)
+        elseif self.current_weapon == "stick" then
+            attackx = -math.cos(KaizoCamera.anglex) * 3
+            attackz = -math.sin(KaizoCamera.anglex) * 3
+        end
 
         local x,y,z = self.body:getPosition()
 
@@ -327,7 +369,11 @@ function KaizoPlayer:attack_enemy()
                 ::continue::
             end
             if enemy then
-                enemy.health = enemy.health - 1
+                if self.current_weapon == "hand" then
+                    enemy.health = enemy.health - 1
+                elseif self.current_weapon == "stick" then
+                    enemy.health = enemy.health - 5
+                end
             end
         end
     else
@@ -338,6 +384,14 @@ function KaizoPlayer:attack_enemy()
 
         local closest_distance = 999999
         local closest_enemy = nil
+
+        local required_distance
+
+        if self.current_weapon == "hand" then
+            required_distance = 1
+        elseif self.current_weapon == "stick" then
+            required_distance = 3
+        end
 
         for index, object in ipairs(MainLevel.objects) do
             if object.marked_for_deletion then
@@ -355,7 +409,7 @@ function KaizoPlayer:attack_enemy()
             cx,cy,cz = object.body:getPosition()
             distance = vec3me:distance(cx,cy,cz)
 
-            if distance <= 1 then
+            if distance <= required_distance then
                 found_enemies[#found_enemies+1] = object
                 if distance <= closest_distance then
                     closest_distance = distance
@@ -367,7 +421,11 @@ function KaizoPlayer:attack_enemy()
         end
 
         if closest_enemy then
-            closest_enemy.health = closest_enemy.health - 1
+            if self.current_weapon == "hand" then
+                closest_enemy.health = closest_enemy.health - 1
+            elseif self.current_weapon == "stick" then
+                closest_enemy.health = closest_enemy.health - 5
+            end
         end
     end
 
@@ -466,6 +524,20 @@ function KaizoPlayer:draw(pass)
                 arm_x_offset = 20
             end
 
+            if self.current_weapon == "stick" then
+                if self.attack_charge > 0 then
+                    arm_y_offset = 30
+                    arm_x_offset = arm_x_offset-40
+                end
+
+                pass:setMaterial(self.textures.stick.texture)
+                if self.frame == 9 then
+                    pass:plane(width - (220 + arm_x_offset) * proportion, height - (160 + arm_y_offset) * proportion, 0, 160 * proportion, 160 * proportion)
+                else
+                    pass:plane(width - (110 + arm_x_offset) * proportion, height - (160 + arm_y_offset) * proportion, 0, 160 * proportion, -160 * proportion)
+                end
+            end
+
             pass:setMaterial(self.textures.arm.texture)
             pass:plane(width - (120 + arm_x_offset) * proportion, height - (60 + arm_y_offset) * proportion, 0, 160 * proportion, -160 * proportion)
             pass:setMaterial()
@@ -473,32 +545,57 @@ function KaizoPlayer:draw(pass)
             Set2DPass(pass,false)
         end
     else
-        local x,y,z = self.body:getPosition()
-
-        if self.frame == 0 or self.frame == 2 then
-            self.textures.stay:draw_billboard(pass,x,y,z,nil,self.frameflip)
-        elseif self.frame == 1 then
-            self.textures.walk1:draw_billboard(pass,x,y,z,nil,self.frameflip)
-        elseif self.frame == 3 then
-            self.textures.walk2:draw_billboard(pass,x,y,z,nil,self.frameflip)
-        elseif self.frame == 4 then
-            self.textures.run:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-        elseif self.frame == 5 then
-            self.textures.run2:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-        elseif self.frame == 6 then
-            self.textures.jump:draw_billboard(pass,x,y,z,nil,self.frameflip)
-        elseif self.frame == 7 then
-            self.textures.fall:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-        elseif self.frame == 8 then
-            self.textures.hurt:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-        elseif self.frame == 9 then
-            self.textures.attack:draw_billboard(pass,x,y,z,1.2,self.frameflip)
-        end
+        self:draw_body(pass)
         --local angle, ax, ay, az = self.body:getOrientation()
         --pass:box(x,y,z, 1, 1.45, 1, angle, ax, ay, az)
     end
 
     self:draw_hud(pass)
+end
+
+function KaizoPlayer:draw_body(pass)
+    local x, y, z = self.body:getPosition()
+    if self.current_weapon == "hand" then
+        if self.frame == 0 or self.frame == 2 then
+            self.textures.stay:draw_billboard(pass, x, y, z, nil, self.frameflip)
+        elseif self.frame == 1 then
+            self.textures.walk1:draw_billboard(pass, x, y, z, nil, self.frameflip)
+        elseif self.frame == 3 then
+            self.textures.walk2:draw_billboard(pass, x, y, z, nil, self.frameflip)
+        elseif self.frame == 4 then
+            self.textures.run:draw_billboard(pass, x, y, z, 1.2, self.frameflip)
+        elseif self.frame == 5 then
+            self.textures.run2:draw_billboard(pass, x, y, z, 1.2, self.frameflip)
+        elseif self.frame == 6 then
+            self.textures.jump:draw_billboard(pass, x, y, z, nil, self.frameflip)
+        elseif self.frame == 7 then
+            self.textures.fall:draw_billboard(pass, x, y, z, 1.2, self.frameflip)
+        elseif self.frame == 8 then
+            self.textures.hurt:draw_billboard(pass, x, y, z, 1.2, self.frameflip)
+        elseif self.frame == 9 then
+            self.textures.attack:draw_billboard(pass, x, y, z, 1.2, self.frameflip)
+        end
+    elseif self.current_weapon == "stick" then
+        if self.attack_charge > 0 then
+            self.textures.charge_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 0 or self.frame == 2 then
+            self.textures.stay_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 1 or self.frame == 3 then
+            self.textures.walk_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 4 then
+            self.textures.run_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 5 then
+            self.textures.run2_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 6 then
+            self.textures.jump_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 7 then
+            self.textures.fall_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 8 then
+            self.textures.hurt_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        elseif self.frame == 9 then
+            self.textures.attack_stick:draw_billboard(pass, x, y, z, 2.727, self.frameflip)
+        end
+    end
 end
 
 function KaizoPlayer:draw_hud(pass)

@@ -12,6 +12,8 @@ KaizoInputHandler.right = false
 KaizoInputHandler.jump = false
 KaizoInputHandler.action = false
 KaizoInputHandler.attack = false
+KaizoInputHandler.weapon_hand = false
+KaizoInputHandler.weapon_stick = false
 
 KaizoInputHandler.pause = false
 KaizoInputHandler.menu_up = false
@@ -35,6 +37,18 @@ function KaizoInputHandler:handle_input()
             KaizoSaveHandler.config.first_person = true
         end
         pressing_first_person = true
+    end
+
+    if lovr.system.isKeyDown(KaizoSaveHandler.config.key_weapon_hand) then
+        self.weapon_hand = true
+    else
+        self.weapon_hand = false
+    end
+
+    if lovr.system.isKeyDown(KaizoSaveHandler.config.key_weapon_stick) then
+        self.weapon_stick = true
+    else
+        self.weapon_stick = false
     end
     
     if lovr.system.isKeyDown("escape") then

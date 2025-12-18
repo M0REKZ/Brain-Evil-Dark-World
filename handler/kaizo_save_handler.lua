@@ -15,6 +15,8 @@ KaizoSaveHandler.config.key_down = nil
 KaizoSaveHandler.config.key_left = nil
 KaizoSaveHandler.config.key_right = nil
 KaizoSaveHandler.config.key_jump = nil
+KaizoSaveHandler.config.key_weapon_hand = nil
+KaizoSaveHandler.config.key_weapon_stick = nil
 KaizoSaveHandler.config.fullscreen = true
 KaizoSaveHandler.config.volume = nil
 KaizoSaveHandler.config.first_person = nil
@@ -36,6 +38,8 @@ function KaizoSaveHandler:InitConfig()
     self.config.key_left = self.config.key_left or "a"
     self.config.key_right = self.config.key_right or "d"
     self.config.key_jump = self.config.key_jump or "space"
+    self.config.key_weapon_hand = self.config.key_weapon_hand or "1"
+    self.config.key_weapon_stick = self.config.key_weapon_stick or "2"
 
     self.config.volume = self.config.volume or 0.5
     self.config.first_person = self.config.first_person or false
