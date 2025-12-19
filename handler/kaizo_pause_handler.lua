@@ -193,14 +193,18 @@ function KaizoPauseHandler:do_options(pass)
                 if KaizoSaveHandler.config.volume < 0 then
                     KaizoSaveHandler.config.volume = 0
                 end
-                lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+                if lovr.audio then
+                    lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+                end
             elseif KaizoInputHandler.menu_right then
                 self.menu_waiting_for_release_key = true
                 KaizoSaveHandler.config.volume = KaizoSaveHandler.config.volume + 0.01
                 if KaizoSaveHandler.config.volume > 1 then
                     KaizoSaveHandler.config.volume = 1
                 end
-                lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+                if lovr.audio then
+                    lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+                end
             end
         end
 

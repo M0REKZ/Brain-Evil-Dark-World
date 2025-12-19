@@ -13,6 +13,10 @@ function KaizoSound:new(soundPath, isMusic, fullpath)
     end
 
     kaizoSound.soundPath = soundPath
+    if not lovr.audio then
+        print("WARNING: Audio module not available, sound " .. soundPath .. " will not be loaded.")
+        return kaizoSound
+    end
     if isMusic then
         kaizoSound.sound = lovr.audio.newSource(soundPath, {pitchable = false})
         kaizoSound.sound:setLooping(true)
@@ -24,13 +28,19 @@ function KaizoSound:new(soundPath, isMusic, fullpath)
 end
 
 function KaizoSound:play()
-    self.sound:play()
+    if self.sound then
+        self.sound:play()
+    end
 end
 
 function KaizoSound:stop()
-    self.sound:stop()
+    if self.sound then
+        self.sound:stop()
+    end
 end
 
 function KaizoSound:pause()
-    self.sound:pause()
+    if self.sound then
+        self.sound:pause()
+    end
 end

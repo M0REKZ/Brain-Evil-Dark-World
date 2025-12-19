@@ -76,7 +76,11 @@ TextShader = lovr.graphics.newShader(vertex,textfragment,{})
 GameFont = lovr.graphics.newFont("data/fonts/Snowstorm.otf",500)
 function lovr.load()
     KaizoSaveHandler:Init()
-    lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+    if lovr.audio then
+        lovr.audio.setVolume(KaizoSaveHandler.config.volume)
+    else
+        print("WARNING: Audio module could not be initialized!")
+    end
     KaizoPauseHandler:init()
     lovr.graphics.setBackgroundColor(0x120730)
     BrainEvilLevelLoader:LoadMenuLevel()
@@ -165,7 +169,7 @@ function lovr.mousemoved(x, y, dx, dy)
     
     if MainLevel.camera_following_object then
         KaizoCamera.anglex = KaizoCamera.anglex + dx * (math.pi/180)
-        KaizoCamera.angley = KaizoCamera.angley + -dy * (math.pi/180)
+        KaizoCamera.angley = KaizoCamera.angley + dy * (math.pi/180)
 
         if KaizoCamera.anglex > math.pi * 2 then
             KaizoCamera.anglex = math.fmod(KaizoCamera.anglex,math.pi * 2)
