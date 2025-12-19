@@ -616,6 +616,8 @@ function KaizoPlayer:draw_hud(pass)
         pass:text(tostring(#MainLevel.targets),width/4, height-12 * proportion, 0,25 * proportion)
     end
     pass:text("Chydia",width/2, height-20 * proportion, 0,50 * proportion)
+    pass:text("Weapon",width - width/12, height-30 * proportion, 0,25 * proportion)
+    pass:text(self.current_weapon,width - width/12, height-12 * proportion, 0,25 * proportion)
     SetGameShader(pass)
     pass:setColor(1, 0, 0)
     pass:plane(width/12, height-18 * proportion, 0, 70 * proportion, 10 * proportion)

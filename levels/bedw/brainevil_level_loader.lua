@@ -122,7 +122,7 @@ function BrainEvilLevelLoader:LoadSpecificLevel(id)
     if id == 1 then
         MainLevel:set_music(KaizoSound:new("music_wind.mp3", true))
         MainLevel.death_line_y = -40
-    elseif id == 2 then
+    elseif id == 2 or id == 3 then
         MainLevel:set_music(KaizoSound:new("music_consumed.mp3", true))
         MainLevel.death_line_y = -40
     end
@@ -209,6 +209,28 @@ function BrainEvilLevelLoader:HandleLevelNodeForDarkWorld(id, nodeid, objname, m
             door.level_2_name = "door1"
             MainLevel:add_object(door)
         end
+    elseif id == 3 then
+        if not MainLevel.level_3_door_1_enemies then
+            MainLevel.level_3_door_1_enemies = {}
+        end
+
+        if objname == "Door1SawBot" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            local bot = BrainEvilKillerBot:new(x,y,z)
+            MainLevel.level_3_door_1_enemies[#MainLevel.level_3_door_1_enemies+1] = bot
+            bot:set_class(1)
+            MainLevel:add_object(bot)
+        end
+
+        if objname == "Door1" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            local door = KaizoCube:new(x,y,z, 30,30,0.1)
+            door.body:setGravityScale(0)
+            door.body:setKinematic(true)
+            door.img = KaizoImage:new("wall_red_square.png")
+            door.level_3_name = "door1"
+            MainLevel:add_object(door)
+        end
     end
 
     --global
@@ -257,6 +279,24 @@ function BrainEvilLevelLoader:HandleLevelUpdateForDarkWorld(dt)
                     if obj.level_2_name == "door1" then
                         obj.marked_for_deletion = true
                         MainLevel.level_2_door_1_open = true
+                        break
+                    end
+                end
+            end
+        end
+    elseif KaizoSaveHandler.savedata.saved_level == 3 then
+        if MainLevel.level_3_door_1_enemies then
+            for num = #MainLevel.level_3_door_1_enemies, 1, -1 do
+                if MainLevel.level_3_door_1_enemies[num].marked_for_deletion then
+                    table.remove(MainLevel.level_3_door_1_enemies,num)
+                end
+            end
+
+            if #MainLevel.level_3_door_1_enemies == 0 and not MainLevel.level_3_door_1_open then
+                for index, obj in ipairs(MainLevel.objects) do
+                    if obj.level_3_name == "door1" then
+                        obj.marked_for_deletion = true
+                        MainLevel.level_3_door_1_open = true
                         break
                     end
                 end

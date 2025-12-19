@@ -330,6 +330,7 @@ function KaizoPauseHandler:handle_menu_option(name)
     elseif name == "Main Menu" then
         BrainEvilLevelLoader:LoadMenuLevel()
         KaizoSaveHandler:SaveSaveData()
+        KaizoSaveHandler:SaveConfig() -- for first_person
         return
     end
 

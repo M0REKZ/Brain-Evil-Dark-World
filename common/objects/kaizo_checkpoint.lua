@@ -43,4 +43,5 @@ function KaizoCheckpoint:handle_pickup(collector)
     KaizoSaveHandler.savedata.saved_checkpoint = self.checkpoint_number
     self.marked_for_deletion = true
     collector.health = 100
+    KaizoSaveHandler:SaveSaveData() -- save data in case game crashes or something happens... or the player quits the game in a wrong way
 end
