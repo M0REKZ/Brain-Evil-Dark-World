@@ -13,6 +13,10 @@ function KaizoStick:new(x,y,z)
     kaizoCube.is_checkpoint = true
     kaizoCube.checkpoint_number = 0
 
+    if KaizoSaveHandler.savedata.player_stick >= 0 then
+        kaizoCube.marked_for_deletion = true
+    end
+
     return kaizoCube
 end
 

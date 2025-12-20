@@ -27,29 +27,6 @@ KaizoInputHandler.last_key_pressed = nil
 local pressing_first_person = false
 
 function KaizoInputHandler:handle_input()
-
-    if pressing_first_person and not lovr.system.isKeyDown(KaizoSaveHandler.config.key_first_person) then
-        pressing_first_person = false
-    elseif not pressing_first_person and lovr.system.isKeyDown(KaizoSaveHandler.config.key_first_person) then
-        if KaizoSaveHandler.config.first_person then
-            KaizoSaveHandler.config.first_person = false
-        else
-            KaizoSaveHandler.config.first_person = true
-        end
-        pressing_first_person = true
-    end
-
-    if lovr.system.isKeyDown(KaizoSaveHandler.config.key_weapon_hand) then
-        self.weapon_hand = true
-    else
-        self.weapon_hand = false
-    end
-
-    if lovr.system.isKeyDown(KaizoSaveHandler.config.key_weapon_stick) then
-        self.weapon_stick = true
-    else
-        self.weapon_stick = false
-    end
     
     if lovr.system.isKeyDown("escape") then
         self.pause = true

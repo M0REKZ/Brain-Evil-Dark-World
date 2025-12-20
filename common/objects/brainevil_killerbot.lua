@@ -167,7 +167,7 @@ function BrainEvilKillerBot:preupdate(dt)
             end
         else
             if distance <= 1 then
-                if not self.attack and (self.class == 1 or self.class == 2) then
+                if not self.attack and (self.class == 1) then
                     self:attack_player()
                     self.sounds.slice:stop()
                     self.sounds.slice:play()

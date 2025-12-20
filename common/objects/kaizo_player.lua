@@ -104,10 +104,10 @@ function KaizoPlayer:preupdate(dt)
         return
     end
 
-    if KaizoInputHandler.weapon_hand then
-        self.current_weapon = "hand"
-    elseif KaizoSaveHandler.savedata.player_stick >= 0 and KaizoInputHandler.weapon_stick then
+    if KaizoSaveHandler.savedata.player_stick >= 0 then
         self.current_weapon = "stick"
+    else
+        self.current_weapon = "hand"
     end
 
     if KaizoInputHandler.up or KaizoInputHandler.left or KaizoInputHandler.right or KaizoInputHandler.down then
@@ -173,7 +173,7 @@ function KaizoPlayer:preupdate(dt)
     elseif KaizoInputHandler.attack and not self.waiting_to_release_attack then
         if self.current_weapon == "stick" then
             if self.attack_charge == 0 then
-                self.attack_charge = FPS/3
+                self.attack_charge = FPS/6
             end
         else
             self:attack_enemy()
