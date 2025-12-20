@@ -25,6 +25,7 @@ function BrainEvilDrone:new(x,y,z)
     kaizoBot.sounds = {
         slice = MainLevel:add_sound(KaizoSound:new("slice.mp3")),
         hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
+        death = MainLevel:add_sound(KaizoSound:new("bot_death.mp3")),
     }
     kaizoBot.intended_vel = {x = 0, y = 0, z = 0}
     kaizoBot.max_intended_vel = {x = 30, y = 50, z = 30}
@@ -53,16 +54,16 @@ function BrainEvilDrone:preupdate(dt)
         return
     end
 
-    if self.health <= 0 then
-        self.sounds.hurt:stop()
-        self.sounds.hurt:play()
-        self.marked_for_deletion = true
-        return
-    end
-
     if self.health < self.prevhealth then
         self.sounds.hurt:stop()
         self.sounds.hurt:play()
+    end
+
+    if self.health <= 0 then
+        self.sounds.death:stop()
+        self.sounds.death:play()
+        self.marked_for_deletion = true
+        return
     end
 
     self.detected_player = nil

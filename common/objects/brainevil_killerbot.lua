@@ -51,6 +51,7 @@ function BrainEvilKillerBot:set_class(class)
         self.sounds = {
             slice = MainLevel:add_sound(KaizoSound:new("slice.mp3")),
             hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
+            death = MainLevel:add_sound(KaizoSound:new("bot_death.mp3")),
         }
         self.dont_slide = true
     elseif class == 1 then -- saw bot
@@ -67,6 +68,7 @@ function BrainEvilKillerBot:set_class(class)
         self.sounds = {
             slice = MainLevel:add_sound(KaizoSound:new("saw.mp3")),
             hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
+            death = MainLevel:add_sound(KaizoSound:new("bot_death.mp3")),
         }
         self.dont_slide = true
         self.slope_smart = true
@@ -86,6 +88,7 @@ function BrainEvilKillerBot:set_class(class)
             shoot = MainLevel:add_sound(KaizoSound:new("laser_shoot.wav")),
             slice = MainLevel:add_sound(KaizoSound:new("slice.mp3")),
             hurt = MainLevel:add_sound(KaizoSound:new("metal_hit.wav")),
+            death = MainLevel:add_sound(KaizoSound:new("bot_death.mp3")),
         }
         self.dont_slide = true
         self.slope_smart = true
@@ -105,16 +108,16 @@ function BrainEvilKillerBot:preupdate(dt)
         return
     end
 
-    if self.health <= 0 then
-        self.sounds.hurt:stop()
-        self.sounds.hurt:play()
-        self.marked_for_deletion = true
-        return
-    end
-
     if self.health < self.prevhealth then
         self.sounds.hurt:stop()
         self.sounds.hurt:play()
+    end
+
+    if self.health <= 0 then
+        self.sounds.death:stop()
+        self.sounds.death:play()
+        self.marked_for_deletion = true
+        return
     end
 
     self.detected_player = nil
