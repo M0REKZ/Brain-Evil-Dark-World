@@ -101,6 +101,7 @@ function KaizoPlayer:preupdate(dt)
         self.marked_for_deletion = true
         self.sounds.death:stop()
         self.sounds.death:play()
+        KaizoPauseHandler.active = true -- so the player can retry
         return
     end
 
@@ -437,6 +438,7 @@ function KaizoPlayer:postupdate(dt)
     if self.health <= 0 then
         self.marked_for_deletion = true
         self.sounds.death:play()
+        KaizoPauseHandler.active = true -- so the player can retry
     end
 
     if self.prevhealth > self.health then
