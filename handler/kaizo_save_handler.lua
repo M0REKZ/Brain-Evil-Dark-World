@@ -21,6 +21,7 @@ KaizoSaveHandler.config.fullscreen = true
 KaizoSaveHandler.config.volume = nil
 KaizoSaveHandler.config.first_person = nil
 KaizoSaveHandler.config.key_first_person = nil
+KaizoSaveHandler.config.invert_mouse = false
 
 KaizoSaveHandler.savedata.saved_level = nil
 KaizoSaveHandler.savedata.saved_checkpoint = nil
@@ -44,6 +45,7 @@ function KaizoSaveHandler:InitConfig()
     self.config.volume = self.config.volume or 0.5
     self.config.first_person = self.config.first_person or false
     --self.config.key_first_person = self.config.key_first_person or "f"
+    self.config.invert_mouse = self.config.invert_mouse or false
 end
 
 function KaizoSaveHandler:InitSaveData()

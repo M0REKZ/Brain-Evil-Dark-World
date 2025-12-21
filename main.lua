@@ -143,6 +143,8 @@ function lovr.update(dt)
     if not IsFullscreen and KaizoSaveHandler.config.fullscreen then
         start_fullscreen = true
     end
+
+    lovr.timer.sleep(1/(FPS+10)) --to avoid high cpu usage
 end
 
 function lovr.mousemoved(x, y, dx, dy)
@@ -169,7 +171,11 @@ function lovr.mousemoved(x, y, dx, dy)
     
     if MainLevel.camera_following_object then
         KaizoCamera.anglex = KaizoCamera.anglex + dx * (math.pi/180)
-        KaizoCamera.angley = KaizoCamera.angley + dy * (math.pi/180)
+        if KaizoSaveHandler.config.invert_mouse then
+            KaizoCamera.angley = KaizoCamera.angley - dy * (math.pi/180)
+        else
+            KaizoCamera.angley = KaizoCamera.angley + dy * (math.pi/180)
+        end
 
         if KaizoCamera.anglex > math.pi * 2 then
             KaizoCamera.anglex = math.fmod(KaizoCamera.anglex,math.pi * 2)

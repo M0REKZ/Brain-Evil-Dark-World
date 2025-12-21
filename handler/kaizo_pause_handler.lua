@@ -41,7 +41,7 @@ function KaizoPauseHandler:init(section)
     KaizoPauseHandler.menu_selected_option = 1
     if section == 1 then --options
         KaizoPauseHandler.menu_options = {
-            "Keyboard",
+            "Controls",
             "", --volume
             "Fullscreen",
             "Save Changes",
@@ -49,6 +49,7 @@ function KaizoPauseHandler:init(section)
     elseif section == 2 then
         KaizoPauseHandler.menu_options = {
             "", --key to bind
+            "Invert Mouse Y: ",
             "Go Back To Options"
         }
     else
@@ -223,6 +224,12 @@ function KaizoPauseHandler:do_key_bind(pass)
         self.menu_options[1] = "Binding key for "..self.keyboard.key_names[self.keyboard.binding_key_number]
     end
 
+    if KaizoSaveHandler.config.invert_mouse then
+        self.menu_options[2] = "Invert Mouse Y: ON"
+    else
+        self.menu_options[2] = "Invert Mouse Y: OFF"
+    end
+
     SetTextShader(pass)
     for index, name in ipairs(self.menu_options) do
         pass:text(name, center.x, (height / 8) * (3 + index), 0, 50 * proportion)
@@ -339,7 +346,7 @@ function KaizoPauseHandler:handle_menu_option(name)
     end
 
     --options
-    if name == "Keyboard" then
+    if name == "Controls" then
         self.menu_section = 2
         return
     elseif name == "Fullscreen" then
@@ -357,6 +364,9 @@ function KaizoPauseHandler:handle_menu_option(name)
     --keyboard
     if name == "Go Back To Options" then
         self.menu_section = 1
+        return
+    elseif name == "Invert Mouse Y: ON" or name == "Invert Mouse Y: OFF" then
+        KaizoSaveHandler.config.invert_mouse = not KaizoSaveHandler.config.invert_mouse
         return
     else
         self.keyboard.binding_key = true
