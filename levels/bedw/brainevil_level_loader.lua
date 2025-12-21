@@ -231,6 +231,13 @@ function BrainEvilLevelLoader:HandleLevelNodeForDarkWorld(id, nodeid, objname, m
             door.level_3_name = "door1"
             MainLevel:add_object(door)
         end
+
+        if objname == "Checkpoint1" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            local checkpoint = KaizoCheckpoint:new(x,y,z)
+            checkpoint.checkpoint_number = 1
+            MainLevel:add_object(checkpoint)
+        end
     end
 
     --global

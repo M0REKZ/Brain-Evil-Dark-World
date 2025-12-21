@@ -347,8 +347,8 @@ function KaizoPlayer:attack_enemy()
             attackx = -math.cos(KaizoCamera.anglex)
             attackz = -math.sin(KaizoCamera.anglex)
         elseif self.current_weapon == "stick" then
-            attackx = -math.cos(KaizoCamera.anglex) * 3
-            attackz = -math.sin(KaizoCamera.anglex) * 3
+            attackx = -math.cos(KaizoCamera.anglex) * 2.5
+            attackz = -math.sin(KaizoCamera.anglex) * 2.5
         end
 
         local x,y,z = self.body:getPosition()
@@ -391,7 +391,7 @@ function KaizoPlayer:attack_enemy()
         if self.current_weapon == "hand" then
             required_distance = 1
         elseif self.current_weapon == "stick" then
-            required_distance = 3
+            required_distance = 2.5
         end
 
         for index, object in ipairs(MainLevel.objects) do
