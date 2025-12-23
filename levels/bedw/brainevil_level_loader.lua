@@ -238,6 +238,12 @@ function BrainEvilLevelLoader:HandleLevelNodeForDarkWorld(id, nodeid, objname, m
             checkpoint.checkpoint_number = 1
             MainLevel:add_object(checkpoint)
         end
+
+        if objname == "Exit" then
+            local x,y,z = map.model.model:getNodePosition(nodeid)
+            MainLevel.exit_pos = {x = x, y = y, z = z}
+            MainLevel.exit_distance = 7
+        end
     end
 
     --global
@@ -326,5 +332,8 @@ function BrainEvilLevelLoader:HandleExitTouch()
         KaizoSaveHandler.savedata.saved_level = 3
         KaizoSaveHandler.savedata.saved_checkpoint = 0
         self:LoadSpecificLevel(3)
+    elseif KaizoSaveHandler.savedata.saved_level == 3 then
+        self:LoadMenuLevel()
+        KaizoMovieHandler:PlayMovie("demoend")
     end
 end
