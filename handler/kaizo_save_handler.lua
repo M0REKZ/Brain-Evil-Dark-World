@@ -17,11 +17,11 @@ KaizoSaveHandler.config.key_right = nil
 KaizoSaveHandler.config.key_jump = nil
 KaizoSaveHandler.config.key_weapon_hand = nil
 KaizoSaveHandler.config.key_weapon_stick = nil
-KaizoSaveHandler.config.fullscreen = true
+KaizoSaveHandler.config.fullscreen = nil
 KaizoSaveHandler.config.volume = nil
 KaizoSaveHandler.config.first_person = nil
 KaizoSaveHandler.config.key_first_person = nil
-KaizoSaveHandler.config.invert_mouse = false
+KaizoSaveHandler.config.invert_mouse = nil
 
 KaizoSaveHandler.savedata.saved_level = nil
 KaizoSaveHandler.savedata.saved_checkpoint = nil

@@ -61,3 +61,10 @@ function SetWindowed()
         glfw.glfwSetWindowMonitor(window, nil, 0, 0, 512, 256+128, -1)
     end
 end
+
+function GetMonitorArea()
+    local monitor_rectangle = ffi.new("int[4]")
+    local monitor = glfw.glfwGetPrimaryMonitor()
+    glfw.glfwGetMonitorWorkarea(monitor, monitor_rectangle, monitor_rectangle + 1, monitor_rectangle + 2, monitor_rectangle + 3)
+    return monitor_rectangle[0], monitor_rectangle[1], monitor_rectangle[2], monitor_rectangle[3]
+end

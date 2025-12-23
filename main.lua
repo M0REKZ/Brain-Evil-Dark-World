@@ -21,9 +21,9 @@ require "levels.bedw.brainevil_level_loader"
 SetMouseGrabbed(true)
 FPS = 60
 
-IsFullscreen = false
-local start_fullscreen = false
-local set_start_fullscreen = false
+IsFullscreen = true
+local start_windowed = false
+local set_start_windowed = false
 
 local sampler = lovr.graphics.newSampler({filter = {"nearest", "nearest", "nearest"}})
 
@@ -92,9 +92,9 @@ end
 
 
 function lovr.update(dt)
-    if not set_start_fullscreen and start_fullscreen then --look at the end of this function for explanation
-        SetFullscreen()
-        set_start_fullscreen = true
+    if not set_start_windowed and start_windowed then
+        SetWindowed()
+        set_start_windowed = true
     end
 
     if KaizoMovieHandler.playing_movie then
@@ -138,10 +138,8 @@ function lovr.update(dt)
         MainLevel:interpolate(alpha)
     end
 
-    -- doing things this way because if i put fullscreen on the
-    -- first tick the game gets stretched graphicaly, which is not wanted
-    if not IsFullscreen and KaizoSaveHandler.config.fullscreen then
-        start_fullscreen = true
+    if IsFullscreen and not KaizoSaveHandler.config.fullscreen then
+        start_windowed = true
     end
 
     lovr.timer.sleep(1/(FPS+10)) --to avoid high cpu usage

@@ -168,10 +168,10 @@ function KaizoPauseHandler:do_options(pass)
 
     SetTextShader(pass)
     for index, name in ipairs(self.menu_options) do
-        if KaizoSaveHandler.config.fullscreen and name == "Fullscreen" then
-            self.menu_options[index] = "Windowed"
-        elseif not KaizoSaveHandler.config.fullscreen and name == "Windowed" then
+        if KaizoSaveHandler.config.fullscreen and name == "Windowed" then
             self.menu_options[index] = "Fullscreen"
+        elseif not KaizoSaveHandler.config.fullscreen and name == "Fullscreen" then
+            self.menu_options[index] = "Windowed"
         end
 
         if index == 2 then -- volume
@@ -349,10 +349,10 @@ function KaizoPauseHandler:handle_menu_option(name)
     if name == "Controls" then
         self.menu_section = 2
         return
-    elseif name == "Fullscreen" then
+    elseif name == "Windowed" then
         SetFullscreen()
         return
-    elseif name == "Windowed" then
+    elseif name == "Fullscreen" then
         SetWindowed()
         return
     elseif name == "Save Changes" then
