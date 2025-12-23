@@ -68,6 +68,8 @@ function KaizoPlayer:new(x,y,z)
     kaizoPlayer.current_weapon = "hand"
     kaizoPlayer.attack_charge = 0
 
+    kaizoPlayer.can_jump = false
+
     return kaizoPlayer
 end
 
@@ -203,19 +205,11 @@ function KaizoPlayer:preupdate(dt)
     if ground_hit then
         self.grounded = true
         self.jumped = false
+        self.can_jump = true
 
         if self.intended_vel.y < 0 then
             self.intended_vel.y = 0
             self.body:setLinearVelocity(velx, self.intended_vel.y, velz)
-        end
-
-        if KaizoInputHandler.jump then
-            self.intended_vel.y = 15
-            vely = 15
-            self.body:setLinearVelocity(velx, self.intended_vel.y, velz)
-            self.jumped = true
-            self.sounds.jump:stop()
-            self.sounds.jump:play()
         end
 
         if self.intended_vel.x ~= 0 or self.intended_vel.z ~= 0 then
@@ -233,6 +227,16 @@ function KaizoPlayer:preupdate(dt)
         end
     else
         self.grounded = false
+    end
+
+    if self.can_jump and KaizoInputHandler.jump then
+        self.can_jump = false
+        self.intended_vel.y = 15
+        vely = 15
+        self.body:setLinearVelocity(velx, self.intended_vel.y, velz)
+        self.jumped = true
+        self.sounds.jump:stop()
+        self.sounds.jump:play()
     end
 
     local wallhitx = nil
